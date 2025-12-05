@@ -7,15 +7,17 @@
 %}
 
 %%
-
-^"#".* { /* Preprocessor (include vs) yutuluyor, islem yapma */ }
+^"#".* { }
 
 "int"       { return TOKEN_INT; }
 "float"     { return TOKEN_FLOAT; }
+"bool"      { return TOKEN_BOOL; } 
+"true"      { yylval.sval = strdup("1"); return TOKEN_TRUE; } 
+"false"     { yylval.sval = strdup("0"); return TOKEN_FALSE; } 
+
 "if"        { return TOKEN_IF; }
 "else"      { return TOKEN_ELSE; }
-"while"     { return TOKEN_WHILE; }
-"return"    { return TOKEN_RETURN; } /* Return eklendi */
+"return"    { return TOKEN_RETURN; }
 
 [0-9]+(\.[0-9]+)? { 
     yylval.sval = strdup(yytext); 
@@ -24,7 +26,7 @@
 
 \"([^\\\"]|\\.)*\" { 
     yylval.sval = strdup(yytext); 
-    return TOKEN_STRING; /* String literal eklendi */
+    return TOKEN_STRING; 
 }
 
 [a-zA-Z_][a-zA-Z0-9_]* { 
@@ -32,14 +34,19 @@
     return TOKEN_ID; 
 }
 
-"//".* { } /* Yorum satiri yut */
-[ \t\n]+    { } /* Bosluk yut */
+"//".* { }
+[ \t\n]+    { }
 
 "="         { return TOKEN_EQ; }
-"=="|"!="|"<"|">"|"+"|"-"|"*"|"/" { 
-    yylval.sval = strdup(yytext);
-    return TOKEN_OP; 
-}
+"=="        { return TOKEN_EQEQ; } /* Eklendi */
+"!="        { return TOKEN_NEQ; }  /* Eklendi */
+"<"         { return '<'; }        /* Eklendi */
+">"         { return '>'; }        /* Eklendi */
+
+"+"         { return '+'; }
+"-"         { return '-'; }
+"*"         { return '*'; }
+"/"         { return '/'; }
 
 ";" { return TOKEN_SEMI; }
 "{" { return TOKEN_LBRACE; }
@@ -48,8 +55,7 @@
 ")" { return ')'; }
 "," { return ','; }
 
-.   { printf("Bilinmeyen karakter: %s\n", yytext); }
+.   { printf("Bilinmeyen: %s\n", yytext); }
 
 %%
-
 int yywrap(void) { return 1; }
